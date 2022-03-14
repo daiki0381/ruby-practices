@@ -5,15 +5,10 @@ require 'optparse'
 
 NUMBER_OF_COLUMNS = 3
 
-def option
-  @option ||= ARGV.getopts('a')
-end
+option = ARGV.getopts('a')
+dirs = option['a'] ? Dir.glob('*', File::FNM_DOTMATCH).sort : Dir.glob('*').sort
 
-def dirs
-  option['a'] ? Dir.glob('*', File::FNM_DOTMATCH).sort : Dir.glob('*').sort
-end
-
-def add_dirs_to_arrs
+def add_dirs_to_arrs(dirs)
   arrs_containing_dirs = Array.new(NUMBER_OF_COLUMNS) { [] }
   number_of_elements_per_column = Rational(dirs.size, NUMBER_OF_COLUMNS).ceil
   index = 0
@@ -25,14 +20,14 @@ def add_dirs_to_arrs
   unity_number_of_arr_elements.transpose
 end
 
-def output_dirs
+def output_dirs(dirs)
   maximum_number_of_words = dirs.map(&:size).max
-  add_dirs_to_arrs.each do |arr|
+  add_dirs_to_arrs(dirs).each do |arr|
     arr.each do |dir|
       print dir.to_s.ljust(maximum_number_of_words + 7)
     end
-    print "\n"
+    puts
   end
 end
 
-output_dirs
+output_dirs(dirs)
