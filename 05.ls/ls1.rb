@@ -79,18 +79,6 @@ def add_file_details_to_arrs
   ].transpose
 end
 
-def collect_file_details(arr)
-  {
-    file_types_and_file_modes: arr[0],
-    number_of_hard_links: arr[1],
-    owners: arr[2],
-    groups: arr[3],
-    file_sizes: arr[4],
-    final_update_dates: arr[5],
-    files: arr[6]
-  }
-end
-
 def collect_maximum_number_of_characters
   {
     maximum_number_of_hard_links_in_characters: number_of_hard_links.map { |number_of_hard_link| number_of_hard_link.to_s.size }.max,
@@ -110,13 +98,20 @@ end
 def output_file_details(maximum_number_of_characters)
   output_total_number_of_blocks
   add_file_details_to_arrs.each do |arr|
-    print "#{collect_file_details(arr)[:file_types_and_file_modes]}  "
-    print "#{collect_file_details(arr)[:number_of_hard_links].to_s.rjust(maximum_number_of_characters[:maximum_number_of_hard_links_in_characters])} "
-    print "#{collect_file_details(arr)[:owners].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_owners])}  "
-    print "#{collect_file_details(arr)[:groups].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_groups])}  "
-    print "#{collect_file_details(arr)[:file_sizes].to_s.rjust(maximum_number_of_characters[:maximum_file_sizes_in_characters])}  "
-    print "#{collect_file_details(arr)[:final_update_dates].to_s.rjust(maximum_number_of_characters[:maximum_number_of_characters_for_final_update_dates])} "
-    print collect_file_details(arr)[:files].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_in_files])
+    file_types_and_file_modes = arr[0]
+    number_of_hard_links = arr[1]
+    owners = arr[2]
+    groups = arr[3]
+    file_sizes = arr[4]
+    final_update_dates = arr[5]
+    files = arr[6]
+    print "#{file_types_and_file_modes}  "
+    print "#{number_of_hard_links.to_s.rjust(maximum_number_of_characters[:maximum_number_of_hard_links_in_characters])} "
+    print "#{owners.to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_owners])}  "
+    print "#{groups.to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_groups])}  "
+    print "#{file_sizes.to_s.rjust(maximum_number_of_characters[:maximum_file_sizes_in_characters])}  "
+    print "#{final_update_dates.to_s.rjust(maximum_number_of_characters[:maximum_number_of_characters_for_final_update_dates])} "
+    print files.to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_in_files])
     print "\n"
   end
 end
