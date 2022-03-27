@@ -27,63 +27,61 @@ PERMISSION_PATTERN = {
   '7' => 'rwx'
 }.freeze
 
-def option
-  ARGV.getopts('l')
-end
-
+option = ARGV.getopts('l')
 dirs = Dir.glob('*').sort
+stats = dirs.map { |dir| File.stat(dir) }
 
-def file_types_and_file_modes(dirs)
-  dirs.map do |dir|
-    file_type = File.stat(dir).ftype.gsub(/fifo|characterSpecial|directory|blockSpecial|file|link|socket/, FILE_TYPE)
-    file_mode = File.stat(dir).mode.to_s(8).slice(-3, 3).gsub(/[01234567]/, PERMISSION_PATTERN)
+def file_types_and_file_modes(stats)
+  stats.map do |stat|
+    file_type = stat.ftype.gsub(/fifo|characterSpecial|directory|blockSpecial|file|link|socket/, FILE_TYPE)
+    file_mode = stat.mode.to_s(8).slice(-3, 3).gsub(/[01234567]/, PERMISSION_PATTERN)
     file_type + file_mode
   end
 end
 
-def number_of_hard_links(dirs)
-  dirs.map { |dir| File.stat(dir).nlink }
+def number_of_hard_links(stats)
+  stats.map(&:nlink)
 end
 
-def owners(dirs)
-  dirs.map { |dir| Etc.getpwuid(File.stat(dir).uid).name }
+def owners(stats)
+  stats.map { |stat| Etc.getpwuid(stat.uid).name }
 end
 
-def groups(dirs)
-  dirs.map { |dir| Etc.getgrgid(File.stat(dir).gid).name }
+def groups(stats)
+  stats.map { |stat| Etc.getgrgid(stat.gid).name }
 end
 
-def file_sizes(dirs)
-  dirs.map { |dir| File.stat(dir).size }
+def file_sizes(stats)
+  stats.map(&:size)
 end
 
-def final_update_dates(dirs)
-  dirs.map { |dir| File.stat(dir).mtime.strftime('%-m %d %H:%M') }
+def final_update_dates(stats)
+  stats.map { |stat| stat.mtime.strftime('%-m %d %H:%M') }
 end
 
 def files(dirs)
   dirs.map { |dir| File.symlink?(dir) ? "#{dir} -> #{File.readlink(dir)}" : dir }
 end
 
-def add_file_details_to_arrs(dirs)
+def add_file_details_to_arrs(dirs, stats)
   [
-    file_types_and_file_modes(dirs),
-    number_of_hard_links(dirs),
-    owners(dirs),
-    groups(dirs),
-    file_sizes(dirs),
-    final_update_dates(dirs),
+    file_types_and_file_modes(stats),
+    number_of_hard_links(stats),
+    owners(stats),
+    groups(stats),
+    file_sizes(stats),
+    final_update_dates(stats),
     files(dirs)
   ].transpose
 end
 
-def collect_maximum_number_of_characters(dirs)
+def collect_maximum_number_of_characters(dirs, stats)
   {
-    maximum_number_of_hard_links_in_characters: number_of_hard_links(dirs).map { |number_of_hard_link| number_of_hard_link.to_s.size }.max,
-    maximum_number_of_characters_for_owners: owners(dirs).map { |owner| owner.to_s.size }.max,
-    maximum_number_of_characters_for_groups: groups(dirs).map { |group| group.to_s.size }.max,
-    maximum_file_sizes_in_characters: file_sizes(dirs).map { |file_size| file_size.to_s.size }.max,
-    maximum_number_of_characters_for_final_update_dates: final_update_dates(dirs).map { |final_update_date| final_update_date.to_s.size }.max,
+    maximum_number_of_hard_links_in_characters: number_of_hard_links(stats).map { |number_of_hard_link| number_of_hard_link.to_s.size }.max,
+    maximum_number_of_characters_for_owners: owners(stats).map { |owner| owner.to_s.size }.max,
+    maximum_number_of_characters_for_groups: groups(stats).map { |group| group.to_s.size }.max,
+    maximum_file_sizes_in_characters: file_sizes(stats).map { |file_size| file_size.to_s.size }.max,
+    maximum_number_of_characters_for_final_update_dates: final_update_dates(stats).map { |final_update_date| final_update_date.to_s.size }.max,
     maximum_number_of_characters_in_files: files(dirs).map { |file| file.to_s.size }.max
   }
 end
@@ -93,9 +91,9 @@ def output_total_number_of_blocks(dirs)
   puts "total #{total_number_of_blocks}"
 end
 
-def output_file_details(dirs, maximum_number_of_characters)
+def output_file_details(dirs, stats, maximum_number_of_characters)
   output_total_number_of_blocks(dirs)
-  add_file_details_to_arrs(dirs).each do |arr|
+  add_file_details_to_arrs(dirs, stats).each do |arr|
     file_types_and_file_modes = arr[0]
     number_of_hard_links = arr[1]
     owners = arr[2]
@@ -136,4 +134,4 @@ def output_dirs(dirs)
   end
 end
 
-option['l'] ? output_file_details(dirs, collect_maximum_number_of_characters(dirs)) : output_dirs(dirs)
+option['l'] ? output_file_details(dirs, stats, collect_maximum_number_of_characters(dirs, stats)) : output_dirs(dirs)
