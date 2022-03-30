@@ -63,7 +63,7 @@ def files(dirs)
   dirs.map { |dir| File.symlink?(dir) ? "#{dir} -> #{File.readlink(dir)}" : dir }
 end
 
-def add_file_details_to_arrs(dirs, stats)
+def add_values_to_arrs(dirs, stats)
   [
     file_types_and_file_modes(stats),
     number_of_hard_links(stats),
@@ -73,6 +73,22 @@ def add_file_details_to_arrs(dirs, stats)
     final_update_dates(stats),
     files(dirs)
   ].transpose
+end
+
+def add_file_details_to_arrs(dirs, stats)
+  key = %i[
+    file_types_and_file_modes
+    number_of_hard_links
+    owners
+    groups
+    file_sizes
+    final_update_dates
+    files
+  ]
+  add_values_to_arrs(dirs, stats).map do |value|
+    arr_containing_key_and_value = [key, value].transpose
+    Hash[*arr_containing_key_and_value.flatten]
+  end
 end
 
 def collect_maximum_number_of_characters(dirs, stats)
@@ -94,20 +110,13 @@ end
 def output_file_details(dirs, stats, maximum_number_of_characters)
   output_total_number_of_blocks(dirs)
   add_file_details_to_arrs(dirs, stats).each do |arr|
-    file_types_and_file_modes = arr[0]
-    number_of_hard_links = arr[1]
-    owners = arr[2]
-    groups = arr[3]
-    file_sizes = arr[4]
-    final_update_dates = arr[5]
-    files = arr[6]
-    print "#{file_types_and_file_modes}  "
-    print "#{number_of_hard_links.to_s.rjust(maximum_number_of_characters[:maximum_number_of_hard_links_in_characters])} "
-    print "#{owners.to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_owners])}  "
-    print "#{groups.to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_groups])}  "
-    print "#{file_sizes.to_s.rjust(maximum_number_of_characters[:maximum_file_sizes_in_characters])}  "
-    print "#{final_update_dates.to_s.rjust(maximum_number_of_characters[:maximum_number_of_characters_for_final_update_dates])} "
-    print files.to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_in_files])
+    print "#{arr[:file_types_and_file_modes]}  "
+    print "#{arr[:number_of_hard_links].to_s.rjust(maximum_number_of_characters[:maximum_number_of_hard_links_in_characters])} "
+    print "#{arr[:owners].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_owners])}  "
+    print "#{arr[:groups].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_groups])}  "
+    print "#{arr[:file_sizes].to_s.rjust(maximum_number_of_characters[:maximum_file_sizes_in_characters])}  "
+    print "#{arr[:final_update_dates].to_s.rjust(maximum_number_of_characters[:maximum_number_of_characters_for_final_update_dates])} "
+    print arr[:files].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_in_files])
     print "\n"
   end
 end
