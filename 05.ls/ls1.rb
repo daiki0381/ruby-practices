@@ -75,7 +75,7 @@ def add_values_to_arrs(dirs, stats)
   ].transpose
 end
 
-def add_file_details_to_arrs(dirs, stats)
+def add_file_details_to_hashes(dirs, stats)
   key = %i[
     file_types_and_file_modes
     number_of_hard_links
@@ -109,14 +109,14 @@ end
 
 def output_file_details(dirs, stats, maximum_number_of_characters)
   output_total_number_of_blocks(dirs)
-  add_file_details_to_arrs(dirs, stats).each do |arr|
-    print "#{arr[:file_types_and_file_modes]}  "
-    print "#{arr[:number_of_hard_links].to_s.rjust(maximum_number_of_characters[:maximum_number_of_hard_links_in_characters])} "
-    print "#{arr[:owners].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_owners])}  "
-    print "#{arr[:groups].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_groups])}  "
-    print "#{arr[:file_sizes].to_s.rjust(maximum_number_of_characters[:maximum_file_sizes_in_characters])}  "
-    print "#{arr[:final_update_dates].to_s.rjust(maximum_number_of_characters[:maximum_number_of_characters_for_final_update_dates])} "
-    print arr[:files].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_in_files])
+  add_file_details_to_hashes(dirs, stats).each do |file_detail|
+    print "#{file_detail[:file_types_and_file_modes]}  "
+    print "#{file_detail[:number_of_hard_links].to_s.rjust(maximum_number_of_characters[:maximum_number_of_hard_links_in_characters])} "
+    print "#{file_detail[:owners].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_owners])}  "
+    print "#{file_detail[:groups].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_for_groups])}  "
+    print "#{file_detail[:file_sizes].to_s.rjust(maximum_number_of_characters[:maximum_file_sizes_in_characters])}  "
+    print "#{file_detail[:final_update_dates].to_s.rjust(maximum_number_of_characters[:maximum_number_of_characters_for_final_update_dates])} "
+    print file_detail[:files].to_s.ljust(maximum_number_of_characters[:maximum_number_of_characters_in_files])
     print "\n"
   end
 end
