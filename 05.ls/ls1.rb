@@ -86,8 +86,8 @@ def add_file_details_to_hashes(dirs, stats)
     files
   ]
   add_values_to_arrs(dirs, stats).map do |value|
-    arr_containing_key_and_value = [key, value].transpose
-    Hash[*arr_containing_key_and_value.flatten]
+    arr_containing_key_and_value = key.zip(value)
+    Hash[arr_containing_key_and_value]
   end
 end
 
