@@ -9,11 +9,9 @@ def main
   if files_data.empty?
     output_standard_input(option)
   elsif option['l']
-    output_lines(files_data)
-    output_total_of_lines(total_of_files_data) if files_data.size != 1
+    output_lines(files_data, total_of_files_data)
   else
-    output_files_data(files_data)
-    output_total_of_files_data(total_of_files_data) if files_data.size != 1
+    output_files_data(files_data, total_of_files_data)
   end
 end
 
@@ -37,25 +35,18 @@ def collect_total_of_files_data(files_data)
   }
 end
 
-def output_files_data(files_data)
+def output_files_data(files_data, total_of_files_data)
   files_data.each do |file_data|
     puts "#{file_data[:lines].to_s.rjust(8)} #{file_data[:words].to_s.rjust(7)} #{file_data[:bytes].to_s.rjust(7)} #{file_data[:file]}"
   end
+  output_total_of_files_data(total_of_files_data) if files_data.size != 1
 end
 
-def output_lines(files_data)
+def output_lines(files_data, total_of_files_data)
   files_data.each do |file_data|
     puts "#{file_data[:lines].to_s.rjust(8)} #{file_data[:file]}"
   end
-end
-
-def output_standard_input(option)
-  standard_input = $stdin.read
-  if option['l']
-    puts standard_input.lines.size.to_s.rjust(8).to_s
-  else
-    puts "#{standard_input.lines.size.to_s.rjust(8)} #{standard_input.split(/\s+/).size.to_s.rjust(7)} #{standard_input.bytesize.to_s.rjust(7)}"
-  end
+  output_total_of_lines(total_of_files_data) if files_data.size != 1
 end
 
 def output_total_of_files_data(total_of_files_data)
@@ -67,6 +58,15 @@ end
 
 def output_total_of_lines(total_of_files_data)
   puts "#{total_of_files_data[:total_of_lines].to_s.rjust(8)} total"
+end
+
+def output_standard_input(option)
+  standard_input = $stdin.read
+  if option['l']
+    puts standard_input.lines.size.to_s.rjust(8).to_s
+  else
+    puts "#{standard_input.lines.size.to_s.rjust(8)} #{standard_input.split(/\s+/).size.to_s.rjust(7)} #{standard_input.bytesize.to_s.rjust(7)}"
+  end
 end
 
 main
