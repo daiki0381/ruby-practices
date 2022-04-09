@@ -1,10 +1,18 @@
 # frozen_string_literal: true
 
+require 'optparse'
+
 def main
+  option = ARGV.getopts('l')
   files_data = collect_files_data
-  output_files_data(files_data)
   total_of_files_data = collect_total_of_files_data(files_data)
-  output_total_of_files_data(total_of_files_data)
+  if option['l']
+    output_lines(files_data)
+    output_total_of_lines(total_of_files_data) if files_data.size != 1
+  else
+    output_files_data(files_data)
+    output_total_of_files_data(total_of_files_data) if files_data.size != 1
+  end
 end
 
 def collect_files_data
@@ -33,11 +41,21 @@ def output_files_data(files_data)
   end
 end
 
+def output_lines(files_data)
+  files_data.each do |file_data|
+    puts "#{file_data[:lines].to_s.rjust(8)} #{file_data[:file]}"
+  end
+end
+
 def output_total_of_files_data(total_of_files_data)
   print (total_of_files_data[:total_of_lines]).to_s.rjust(8)
   print (total_of_files_data[:total_of_words]).to_s.rjust(8)
   print (total_of_files_data[:total_of_bytes]).to_s.rjust(8)
   print 'total'.rjust(6)
+end
+
+def output_total_of_lines(total_of_files_data)
+  puts "#{total_of_files_data[:total_of_lines].to_s.rjust(8)} total"
 end
 
 main
