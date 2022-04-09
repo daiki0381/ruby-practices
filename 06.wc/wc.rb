@@ -1,18 +1,43 @@
 # frozen_string_literal: true
 
-# file = ARGV[0]
-# file_contents = File.read(file)
-# puts "#{file_contents.lines.size.to_s.rjust(8)} #{file_contents.split(/\s+/).size.to_s.rjust(7)} #{File::Stat.new(file).size.to_s.rjust(7)} #{file}"
-
-total_of_lines = 0
-total_of_words = 0
-total_of_bytes = 0
-
-ARGV.each do |file|
-  file_contents = File.read(file)
-  puts "#{file_contents.lines.size.to_s.rjust(8)} #{file_contents.split(/\s+/).size.to_s.rjust(7)} #{File::Stat.new(file).size.to_s.rjust(7)} #{file}"
-  total_of_lines += file_contents.lines.size
-  total_of_words += file_contents.split(/\s+/).size
-  total_of_bytes += File::Stat.new(file).size
+def main
+  files_data = collect_files_data
+  output_files_data(files_data)
+  total_of_files_data = collect_total_of_files_data(files_data)
+  output_total_of_files_data(total_of_files_data)
 end
-puts "#{total_of_lines.to_s.rjust(8)} #{total_of_words.to_s.rjust(7)} #{total_of_bytes.to_s.rjust(7)} total"
+
+def collect_files_data
+  ARGV.each.map do |file|
+    file_contents = File.read(file)
+    {
+      lines: file_contents.lines.size,
+      words: file_contents.split(/\s+/).size,
+      bytes: File::Stat.new(file).size,
+      file: file
+    }
+  end
+end
+
+def collect_total_of_files_data(files_data)
+  {
+    total_of_lines: files_data.sum { |file_data| file_data[:lines] },
+    total_of_words: files_data.sum { |file_data| file_data[:words] },
+    total_of_bytes: files_data.sum { |file_data| file_data[:bytes] }
+  }
+end
+
+def output_files_data(files_data)
+  files_data.each do |file_data|
+    puts "#{file_data[:lines].to_s.rjust(8)} #{file_data[:words].to_s.rjust(7)} #{file_data[:bytes].to_s.rjust(7)} #{file_data[:file]}"
+  end
+end
+
+def output_total_of_files_data(total_of_files_data)
+  print (total_of_files_data[:total_of_lines]).to_s.rjust(8)
+  print (total_of_files_data[:total_of_words]).to_s.rjust(8)
+  print (total_of_files_data[:total_of_bytes]).to_s.rjust(8)
+  print 'total'.rjust(6)
+end
+
+main
