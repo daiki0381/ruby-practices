@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Shot
   # ①コマンドライン引数をインスタンス変数に入れる。
   def initialize(shots)
