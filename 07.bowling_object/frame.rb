@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 class Frame
-  # ①使える形に処理した配列をインスタンス変数に入れる。
   def initialize(shots)
     @shots = shots
   end
 
-  # ②フレームに分割する。
   def divide_into_frames
     frames = []
     10.times { frames << [] }

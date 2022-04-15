@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 class Game
-  # ①フレームに分割した配列をインスタンス変数に入れる。
   def initialize(frames)
     @frames = frames
   end
 
-  # ②合計点を算出する。
   def calculate_total_score
     total = 0
     @frames.each_with_index do |frame, index|
