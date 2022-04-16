@@ -5,8 +5,7 @@ require 'optparse'
 def main
   option = ARGV.getopts('l')
   files_data = collect_files_data
-  total_of_files_data = collect_total_of_files_data(files_data)
-  files_data.empty? ? output_standard_input(option) : output_files(option, files_data, total_of_files_data)
+  files_data.empty? ? output_standard_input(option) : output_files(option, files_data)
 end
 
 def collect_files_data
@@ -54,7 +53,8 @@ def output_total_of_lines(total_of_files_data)
   puts "#{total_of_files_data[:total_of_lines].to_s.rjust(8)} total"
 end
 
-def output_files(option, files_data, total_of_files_data)
+def output_files(option, files_data)
+  total_of_files_data = collect_total_of_files_data(files_data)
   option['l'] ? output_lines(files_data, total_of_files_data) : output_files_data(files_data, total_of_files_data)
 end
 
