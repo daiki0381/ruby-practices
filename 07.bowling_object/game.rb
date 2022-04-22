@@ -1,37 +1,6 @@
 # frozen_string_literal: true
 
-class Shot
-  attr_reader :mark
-
-  def initialize(mark)
-    @mark = mark
-  end
-
-  def score
-    @mark == 'X' ? 10 : @mark.to_i
-  end
-end
-
-class Frame
-  def initialize(first_mark, second_mark = nil, third_mark = nil)
-    @first_mark = Shot.new(first_mark)
-    @second_mark = Shot.new(second_mark)
-    @third_mark = Shot.new(third_mark)
-  end
-
-  def store_frame_to_array
-    frame_without_nil = [@first_mark.mark, @second_mark.mark, @third_mark.mark]
-    frame_without_nil.include?(nil) ? frame_without_nil.compact! : frame_without_nil
-    case frame_without_nil.length
-    when 1
-      [@first_mark.score]
-    when 2
-      [@first_mark.score, @second_mark.score]
-    when 3
-      [@first_mark.score, @second_mark.score, @third_mark.score]
-    end
-  end
-end
+require_relative './frame'
 
 class Game
   def initialize(marks)
@@ -69,9 +38,9 @@ class Game
         if index == 9
           frame.sum
         elsif frame[0] == 10
-          calculate_strike(index, frame)
+          calculate_strike(frame, index)
         elsif frame.sum == 10
-          calculate_spare(index, frame)
+          calculate_spare(frame, index)
         else
           frame.sum
         end
@@ -79,7 +48,7 @@ class Game
     total
   end
 
-  def calculate_strike(index, frame)
+  def calculate_strike(frame, index)
     if store_frames_to_array[index + 1][0] == 10 && index + 1 != 9
       frame[0] + store_frames_to_array[index + 1][0] + store_frames_to_array[index + 2][0]
     else
@@ -87,7 +56,7 @@ class Game
     end
   end
 
-  def calculate_spare(index, frame)
+  def calculate_spare(frame, index)
     frame.sum + store_frames_to_array[index + 1][0]
   end
 end
