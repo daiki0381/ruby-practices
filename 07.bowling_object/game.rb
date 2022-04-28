@@ -4,6 +4,7 @@ require_relative './frame'
 
 class Game
   def initialize(marks)
+    # [1,1,1,1,1,1,1,1,1,1]
     @marks = marks.split(',')
   end
 
@@ -22,13 +23,13 @@ class Game
         frames_index += 1 if frames[frames_index].length == 2
       end
     end
-    frames
+    frames.map do |frame|
+      Frame.new(frame[0], frame[1], frame[2])
+    end
   end
 
   def build_game
-    divide_into_frames.map do |frame|
-      Frame.new(frame[0], frame[1], frame[2]).build_frame
-    end
+    divide_into_frames.map(&:build_frame)
   end
 
   def calculate_total_score
