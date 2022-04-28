@@ -25,15 +25,15 @@ class Game
     frames
   end
 
-  def store_frames_to_array
+  def build_game
     divide_into_frames.map do |frame|
-      Frame.new(frame[0], frame[1], frame[2]).store_frame_to_array
+      Frame.new(frame[0], frame[1], frame[2]).build_frame
     end
   end
 
   def calculate_total_score
     total = 0
-    store_frames_to_array.each_with_index do |frame, index|
+    build_game.each_with_index do |frame, index|
       total +=
         if index == 9
           frame.sum
@@ -49,15 +49,15 @@ class Game
   end
 
   def calculate_strike(frame, index)
-    if store_frames_to_array[index + 1][0] == 10 && index + 1 != 9
-      frame[0] + store_frames_to_array[index + 1][0] + store_frames_to_array[index + 2][0]
+    if build_game[index + 1][0] == 10 && index + 1 != 9
+      frame[0] + build_game[index + 1][0] + build_game[index + 2][0]
     else
-      frame[0] + store_frames_to_array[index + 1][0] + store_frames_to_array[index + 1][1]
+      frame[0] + build_game[index + 1][0] + build_game[index + 1][1]
     end
   end
 
   def calculate_spare(frame, index)
-    frame.sum + store_frames_to_array[index + 1][0]
+    frame.sum + build_game[index + 1][0]
   end
 end
 

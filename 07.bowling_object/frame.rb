@@ -9,7 +9,7 @@ class Frame
     @third_mark = Shot.new(third_mark)
   end
 
-  def store_frame_to_array
+  def build_frame
     frame_without_nil = [@first_mark.mark, @second_mark.mark, @third_mark.mark]
     frame_without_nil.include?(nil) ? frame_without_nil.compact! : frame_without_nil
     case frame_without_nil.length
