@@ -61,6 +61,6 @@ class Game
   end
 end
 
-game_object = Game.new(ARGV[0])
-total_score = game_object.calculate_total_score
+game = Game.new(ARGV[0])
+total_score = game.calculate_total_score
 puts total_score
