@@ -4,7 +4,6 @@ require_relative './frame'
 
 class Game
   def initialize(marks)
-    # [1,1,1,1,1,1,1,1,1,1]
     @marks = marks.split(',')
   end
 
