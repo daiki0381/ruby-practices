@@ -10,23 +10,29 @@ class Frame
     @third_shot = third_shot
   end
 
-  def calculate_the_total_of_one_frame
-    [@first_shot.score, @second_shot.score, @third_shot.score].sum
-  end
-
-  def strike?
-    @first_shot.score == STRIKE
-  end
-
-  def spare?
-    !strike? && [@first_shot.score, @second_shot.score].sum == SPARE
-  end
-
   def first_shot
     @first_shot.score
   end
 
   def second_shot
     @second_shot.score
+  end
+
+  def calculate_the_total_of_one_frame
+    [first_shot, second_shot, third_shot].sum
+  end
+
+  def strike?
+    first_shot == STRIKE
+  end
+
+  def spare?
+    !strike? && [first_shot, second_shot].sum == SPARE
+  end
+
+  private
+
+  def third_shot
+    @third_shot.score
   end
 end

@@ -8,7 +8,7 @@ class Game
     @marks = marks.split(',')
   end
 
-  def divide_into_marks
+  def build_frames
     frames = []
     10.times { frames << [] }
     frames_index = 0
@@ -23,16 +23,12 @@ class Game
         frames_index += 1 if frames[frames_index].length == 2
       end
     end
-    frames
-  end
-
-  def build_frames
-    divide_into_marks.map do |mark|
-      Frame.new(Shot.new(mark[0]), Shot.new(mark[1]), Shot.new(mark[2]))
+    frames.map do |frame|
+      Frame.new(Shot.new(frame[0]), Shot.new(frame[1]), Shot.new(frame[2]))
     end
   end
 
-  def calculate_total_score
+  def calculate_the_total_of_all_frames
     total = 0
     build_frames.each_with_index do |frame, index|
       total +=
@@ -50,7 +46,7 @@ class Game
   end
 
   def calculate_strike(frame, index)
-    if build_frames[index + 1].first_shot == 10 && index + 1 != 9
+    if build_frames[index + 1].first_shot == STRIKE && index + 1 != 9
       frame.first_shot + build_frames[index + 1].first_shot + build_frames[index + 2].first_shot
     else
       frame.first_shot + build_frames[index + 1].first_shot + build_frames[index + 1].second_shot
@@ -63,4 +59,5 @@ class Game
 end
 
 game = Game.new(ARGV[0])
-p game.calculate_total_score
+total_score = game.calculate_the_total_of_all_frames
+puts total_score
