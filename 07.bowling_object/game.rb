@@ -8,13 +8,35 @@ class Game
     @marks = marks.split(',')
   end
 
+  def calculate_total_score
+    total = 0
+    frames = build_frames
+    frames.each_with_index do |frame, index|
+      next_frame = frames[index + 1]
+      after_next_frame = frames[index + 2]
+      total +=
+        if frame.final_frame?(index)
+          frame.calculate_the_total_of_one_frame
+        elsif frame.strike?
+          calculate_strike(frame, next_frame, after_next_frame, index)
+        elsif frame.spare?
+          calculate_spare(frame, next_frame)
+        else
+          frame.calculate_the_total_of_one_frame
+        end
+    end
+    total
+  end
+
+  private
+
   def build_frames
     frames = []
     10.times { frames << [] }
     frames_index = 0
     @marks.each do |mark|
       if frames_index == 9
-        frames[frames_index] << (mark == 'X' ? 'X' : mark)
+        frames[frames_index] << mark
       elsif mark == 'X'
         frames[frames_index] << 'X'
         frames_index += 1
@@ -28,36 +50,18 @@ class Game
     end
   end
 
-  def calculate_the_total_of_all_frames
-    total = 0
-    build_frames.each_with_index do |frame, index|
-      total +=
-        if index == 9
-          frame.calculate_the_total_of_one_frame
-        elsif frame.strike?
-          calculate_strike(frame, index)
-        elsif frame.spare?
-          calculate_spare(frame, index)
-        else
-          frame.calculate_the_total_of_one_frame
-        end
-    end
-    total
-  end
-
-  def calculate_strike(frame, index)
-    if build_frames[index + 1].first_shot == STRIKE && index + 1 != 9
-      frame.first_shot + build_frames[index + 1].first_shot + build_frames[index + 2].first_shot
+  def calculate_strike(frame, next_frame, after_next_frame, index)
+    if frame.next_frame_strike?(next_frame) && frame.next_frame_except_final_frame?(index)
+      frame.score_of_first_shot + next_frame.score_of_first_shot + after_next_frame.score_of_first_shot
     else
-      frame.first_shot + build_frames[index + 1].first_shot + build_frames[index + 1].second_shot
+      frame.score_of_first_shot + next_frame.score_of_first_shot + next_frame.score_of_second_shot
     end
   end
 
-  def calculate_spare(frame, index)
-    frame.calculate_the_total_of_one_frame + build_frames[index + 1].first_shot
+  def calculate_spare(frame, next_frame)
+    frame.calculate_the_total_of_one_frame + next_frame.score_of_first_shot
   end
 end
 
 game = Game.new(ARGV[0])
-total_score = game.calculate_the_total_of_all_frames
-puts total_score
+puts game.calculate_total_score

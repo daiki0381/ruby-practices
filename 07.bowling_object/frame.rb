@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-STRIKE = 10
-SPARE = 10
-
 class Frame
   def initialize(first_shot, second_shot = nil, third_shot = nil)
     @first_shot = first_shot
@@ -10,29 +7,41 @@ class Frame
     @third_shot = third_shot
   end
 
-  def first_shot
+  def score_of_first_shot
     @first_shot.score
   end
 
-  def second_shot
+  def score_of_second_shot
     @second_shot.score
   end
 
   def calculate_the_total_of_one_frame
-    [first_shot, second_shot, third_shot].sum
+    [score_of_first_shot, score_of_second_shot, score_of_third_shot].sum
   end
 
   def strike?
-    first_shot == STRIKE
+    score_of_first_shot == 10
   end
 
   def spare?
-    !strike? && [first_shot, second_shot].sum == SPARE
+    !strike? && [score_of_first_shot, score_of_second_shot].sum == 10
+  end
+
+  def final_frame?(index)
+    index == 9
+  end
+
+  def next_frame_strike?(next_frame)
+    next_frame.score_of_first_shot == 10
+  end
+
+  def next_frame_except_final_frame?(index)
+    index + 1 != 9
   end
 
   private
 
-  def third_shot
+  def score_of_third_shot
     @third_shot.score
   end
 end
