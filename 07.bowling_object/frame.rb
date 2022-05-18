@@ -7,14 +7,6 @@ class Frame
     @third_shot = third_shot
   end
 
-  def score_of_first_shot
-    @first_shot.score
-  end
-
-  def score_of_second_shot
-    @second_shot.score
-  end
-
   def calculate_the_total_of_one_frame
     [score_of_first_shot, score_of_second_shot, score_of_third_shot].sum
   end
@@ -37,6 +29,14 @@ class Frame
 
   def next_frame_except_final_frame?(index)
     index + 1 != 9
+  end
+
+  def score_of_first_shot
+    @first_shot.score
+  end
+
+  def score_of_second_shot
+    @second_shot.score
   end
 
   private
