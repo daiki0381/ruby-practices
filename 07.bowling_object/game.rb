@@ -11,17 +11,13 @@ class Game
   def calculate_total_score
     total = 0
     frames = build_frames
-    not_final_frame = false
-    next_frame_not_final_frame = false
     frames.each_with_index do |frame, index|
-      not_final_frame = index != 9
-      next_frame_not_final_frame = index + 1 != 9
       next_frame = frames[index + 1]
       after_next_frame = frames[index + 2]
       total +=
-        if frame.strike? && not_final_frame
-          calculate_strike(frame, next_frame, after_next_frame, next_frame_not_final_frame)
-        elsif frame.spare? & not_final_frame
+        if frame.strike? && !frame.final_frame?
+          calculate_strike(frame, next_frame, after_next_frame)
+        elsif frame.spare? && !frame.final_frame?
           calculate_spare(frame, next_frame)
         else
           frame.calculate_the_total_of_one_frame
@@ -29,7 +25,6 @@ class Game
     end
     total
   end
-
 
   private
 
@@ -45,13 +40,13 @@ class Game
         frames_index += 1
       end
     end
-    frames.map do |frame|
-      Frame.new(Shot.new(frame[0]), Shot.new(frame[1]), Shot.new(frame[2]))
+    frames.map.with_index do |frame, index|
+      Frame.new(index, Shot.new(frame[0]), Shot.new(frame[1]), Shot.new(frame[2]))
     end
   end
 
-  def calculate_strike(frame, next_frame, after_next_frame, next_frame_not_final_frame)
-    if next_frame.strike? && next_frame_not_final_frame
+  def calculate_strike(frame, next_frame, after_next_frame)
+    if next_frame.strike? && !next_frame.final_frame?
       frame.score_of_first_shot + next_frame.score_of_first_shot + after_next_frame.score_of_first_shot
     else
       frame.score_of_first_shot + next_frame.score_of_first_shot + next_frame.score_of_second_shot
