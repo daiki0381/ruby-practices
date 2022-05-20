@@ -51,7 +51,7 @@ class Game
   end
 
   def calculate_strike(frame, next_frame, after_next_frame, index)
-    if frame.next_frame_strike?(next_frame) && frame.next_frame_except_final_frame?(index)
+    if next_frame.strike? && frame.next_frame_except_final_frame?(index)
       frame.score_of_first_shot + next_frame.score_of_first_shot + after_next_frame.score_of_first_shot
     else
       frame.score_of_first_shot + next_frame.score_of_first_shot + next_frame.score_of_second_shot

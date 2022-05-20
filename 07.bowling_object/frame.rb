@@ -23,10 +23,6 @@ class Frame
     index == 9
   end
 
-  def next_frame_strike?(next_frame)
-    next_frame.score_of_first_shot == 10
-  end
-
   def next_frame_except_final_frame?(index)
     index + 1 != 9
   end
