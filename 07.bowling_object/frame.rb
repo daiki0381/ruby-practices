@@ -19,14 +19,6 @@ class Frame
     !strike? && [score_of_first_shot, score_of_second_shot].sum == 10
   end
 
-  def final_frame?(index)
-    index == 9
-  end
-
-  def next_frame_except_final_frame?(index)
-    index + 1 != 9
-  end
-
   def score_of_first_shot
     @first_shot.score
   end
