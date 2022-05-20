@@ -35,14 +35,11 @@ class Game
     10.times { frames << [] }
     frames_index = 0
     @marks.each do |mark|
-      if frames_index == 9
-        frames[frames_index] << mark
-      elsif mark == 'X'
-        frames[frames_index] << 'X'
+      frames[frames_index] << mark
+      if mark == 'X' && frames_index != 9
         frames_index += 1
-      else
-        frames[frames_index] << mark
-        frames_index += 1 if frames[frames_index].length == 2
+      elsif frames[frames_index].length == 2 && frames_index != 9
+        frames_index += 1
       end
     end
     frames.map do |frame|
