@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require_relative 'file_details'
+require_relative 'file_info'
 require_relative 'file_list'
-require_relative 'file_details_list'
+require_relative 'file_info_list'
 
 class LsCommand
   def initialize(option)

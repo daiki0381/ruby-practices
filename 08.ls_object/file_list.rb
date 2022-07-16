@@ -12,13 +12,13 @@ class FileList
     number_of_files_per_column = Rational(@dir.size, NUMBER_OF_COLUMNS).ceil
     index = 0
     @dir.each do |file|
-      array_containing_multiple_arrays[index] << file.file_name
+      array_containing_multiple_arrays[index] << file.name_and_symbolic_link
       index += 1 if (array_containing_multiple_arrays[index].size % number_of_files_per_column).zero?
     end
     array_with_interchanged_rows_and_columns_of_multiple_arrays = array_containing_multiple_arrays.map do |arr|
       arr.values_at(0...number_of_files_per_column)
     end.transpose
-    maximum_number_of_words = @dir.map { |file| file.file_name.size }.max
+    maximum_number_of_words = @dir.map { |file| file.name_and_symbolic_link.size }.max
     array_with_interchanged_rows_and_columns_of_multiple_arrays.each do |arr|
       arr.each do |file|
         print file.to_s.ljust(maximum_number_of_words + 7)
