@@ -12,8 +12,8 @@ class LsCommand
 
   def output_ls_command
     dir = @option['a'] ? Dir.glob('*', File::FNM_DOTMATCH).sort : Dir.glob('*').sort
-    dir = @option['r'] ? dir.reverse.map { |file| FileDetails.new(file) } : dir.map { |file| FileDetails.new(file) }
-    @option['l'] ? FileDetailsList.new(dir).output_file_details_list : FileList.new(dir).output_file_list
+    dir = @option['r'] ? dir.reverse.map { |file| FileInfo.new(file) } : dir.map { |file| FileInfo.new(file) }
+    @option['l'] ? FileInfoList.new(dir).output_file_details_list : FileList.new(dir).output_file_list
   end
 end
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FileDetailsList
+class FileInfoList
   def initialize(dir)
     @dir = dir
   end

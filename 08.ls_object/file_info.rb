@@ -2,7 +2,7 @@
 
 require 'etc'
 
-class FileDetails
+class FileInfo
   FILE_TYPE = {
     'fifo' => 'p',
     'characterSpecial' => 'c',
