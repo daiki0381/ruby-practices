@@ -22,9 +22,25 @@ class FileInfoList
     '7' => 'rwx'
   }.freeze
 
-  def initialize(dir)
-    @dir = dir
+  def initialize(files)
+    @files = files
   end
+
+  def output_file_info_list
+    puts "total #{total_block_count}"
+    nested_file_data_list.each do |file_data_list|
+      print "#{file_data_list[:type_and_permission]}  "
+      print "#{file_data_list[:hard_link_count].to_s.rjust(file_data_list[:hard_link_count_max_length])} "
+      print "#{file_data_list[:owner_name].to_s.ljust(file_data_list[:owner_name_max_length])}  "
+      print "#{file_data_list[:group_name].to_s.ljust(file_data_list[:group_name_max_length])}  "
+      print "#{file_data_list[:size].to_s.rjust(file_data_list[:size_max_length])}  "
+      print "#{file_data_list[:formatted_time].to_s.rjust(file_data_list[:formatted_time_max_length])} "
+      print file_data_list[:name_and_symbolic_link].to_s.ljust(file_data_list[:name_and_symbolic_link_max_length])
+      print "\n"
+    end
+  end
+
+  private
 
   def type_and_permission(file)
     type = file.type.gsub(/fifo|characterSpecial|directory|blockSpecial|file|link|socket/, TYPE)
@@ -36,44 +52,51 @@ class FileInfoList
     file.final_update_time.strftime('%-m %d %H:%M')
   end
 
-  def array_containing_file_details
-    [
-      @dir.map { |file| type_and_permission(file) },
-      @dir.map(&:hard_link_count),
-      @dir.map(&:owner_name),
-      @dir.map(&:group_name),
-      @dir.map(&:size),
-      @dir.map { |file| formatted_time(file) },
-      @dir.map(&:name_and_symbolic_link)
-    ].transpose
+  def hard_link_count_max_length
+    @files.map { |file| file.hard_link_count.to_s.size }.max
   end
 
-  def array_containing_maximum_number_of_words
-    [
-      @dir.map { |file| file.hard_link_count.to_s.size }.max,
-      @dir.map { |file| file.owner_name.size }.max,
-      @dir.map { |file| file.group_name.size }.max,
-      @dir.map { |file| file.size.to_s.size }.max,
-      @dir.map { |file| formatted_time(file).size }.max,
-      @dir.map { |file| file.name_and_symbolic_link.size }.max
-    ]
+  def owner_name_max_length
+    @files.map { |file| file.owner_name.size }.max
+  end
+
+  def group_name_max_length
+    @files.map { |file| file.group_name.size }.max
+  end
+
+  def size_max_length
+    @files.map { |file| file.size.to_s.size }.max
+  end
+
+  def formatted_time_max_length
+    @files.map { |file| formatted_time(file).size }.max
+  end
+
+  def name_and_symbolic_link_max_length
+    @files.map { |file| file.name_and_symbolic_link.size }.max
   end
 
   def total_block_count
-    @dir.map(&:block_count).sum
+    @files.map(&:block_count).sum
   end
 
-  def output_file_details_list
-    puts "total #{total_block_count}"
-    array_containing_file_details.each do |file_details|
-      print "#{file_details[0]}  "
-      print "#{file_details[1].to_s.rjust(array_containing_maximum_number_of_words[0])} "
-      print "#{file_details[2].to_s.ljust(array_containing_maximum_number_of_words[1])}  "
-      print "#{file_details[3].to_s.ljust(array_containing_maximum_number_of_words[2])}  "
-      print "#{file_details[4].to_s.rjust(array_containing_maximum_number_of_words[3])}  "
-      print "#{file_details[5].to_s.rjust(array_containing_maximum_number_of_words[4])} "
-      print file_details[6].to_s.ljust(array_containing_maximum_number_of_words[5])
-      print "\n"
+  def nested_file_data_list
+    @files.map do |file|
+      {
+        type_and_permission: type_and_permission(file),
+        hard_link_count: file.hard_link_count,
+        owner_name: file.owner_name,
+        group_name: file.group_name,
+        size: file.size,
+        formatted_time: formatted_time(file),
+        name_and_symbolic_link: file.name_and_symbolic_link,
+        hard_link_count_max_length: hard_link_count_max_length,
+        owner_name_max_length: owner_name_max_length,
+        group_name_max_length: group_name_max_length,
+        size_max_length: size_max_length,
+        formatted_time_max_length: formatted_time_max_length,
+        name_and_symbolic_link_max_length: name_and_symbolic_link_max_length
+      }
     end
   end
 end
