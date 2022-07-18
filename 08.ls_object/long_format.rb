@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class FileInfoList
+class LongFormat
   TYPE = {
     'fifo' => 'p',
     'characterSpecial' => 'c',
