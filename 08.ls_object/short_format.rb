@@ -7,7 +7,7 @@ class ShortFormat
     @files = files
   end
 
-  def output_file_list
+  def output
     nested_files = Array.new(COL_COUNT) { [] }
     file_count_per_col = Rational(@files.size, COL_COUNT).ceil
     index = 0

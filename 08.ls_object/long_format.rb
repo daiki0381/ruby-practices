@@ -26,7 +26,7 @@ class LongFormat
     @files = files
   end
 
-  def output_file_info_list
+  def output
     puts "total #{total_block_count}"
     nested_file_data_list.each do |file_data_list|
       print "#{file_data_list[:type_and_permission]}  "
