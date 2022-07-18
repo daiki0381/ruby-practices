@@ -3,25 +3,25 @@
 class ShortFormat
   COL_COUNT = 3
 
-  def initialize(files)
-    @files = files
+  def initialize(file_info_list)
+    @file_info_list = file_info_list
   end
 
   def output
-    nested_files = Array.new(COL_COUNT) { [] }
-    file_count_per_col = Rational(@files.size, COL_COUNT).ceil
+    nested_file_info_list = Array.new(COL_COUNT) { [] }
+    file_info_count_per_col = Rational(@file_info_list.size, COL_COUNT).ceil
     index = 0
-    @files.each do |file|
-      nested_files[index] << file.name_and_symbolic_link
-      index += 1 if (nested_files[index].size % file_count_per_col).zero?
+    @file_info_list.each do |file_info|
+      nested_file_info_list[index] << file_info.name_and_symbolic_link
+      index += 1 if (nested_file_info_list[index].size % file_info_count_per_col).zero?
     end
-    transposed_nested_files = nested_files.map do |files|
-      files.values_at(0...file_count_per_col)
+    transposed_nested_file_info_list = nested_file_info_list.map do |file_info_list|
+      file_info_list.values_at(0...file_info_count_per_col)
     end.transpose
-    file_name_max_length = @files.map { |file| file.name_and_symbolic_link.size }.max
-    transposed_nested_files.each do |files|
-      files.each do |file|
-        print file.to_s.ljust(file_name_max_length + 7)
+    file_name_max_length = @file_info_list.map { |file_info| file_info.name_and_symbolic_link.size }.max
+    transposed_nested_file_info_list.each do |file_info_list|
+      file_info_list.each do |file_info|
+        print file_info.to_s.ljust(file_name_max_length + 7)
       end
       puts
     end
