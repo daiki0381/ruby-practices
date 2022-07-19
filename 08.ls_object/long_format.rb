@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'parallel'
-
 class LongFormat
   TYPE = {
     'fifo' => 'p',
@@ -57,40 +55,62 @@ class LongFormat
   end
 
   def hard_link_count_max_length
-    Parallel.map(@file_info_list, in_threads: @file_info_list.size) { |file_info| file_info.hard_link_count.to_s.size }.max
+    @file_info_list.map do |file_info|
+      Thread.new do
+        file_info.hard_link_count.to_s.size
+      end.value
+    end.max
   end
 
   def owner_name_max_length
-    Parallel.map(@file_info_list, in_threads: @file_info_list.size) { |file_info| file_info.owner_name.size }.max
+    @file_info_list.map do |file_info|
+      Thread.new do
+        file_info.owner_name.size
+      end.value
+    end.max
   end
 
   def group_name_max_length
-    Parallel.map(@file_info_list, in_threads: @file_info_list.size) { |file_info| file_info.group_name.size }.max
+    @file_info_list.map do |file_info|
+      Thread.new do
+        file_info.group_name.size
+      end.value
+    end.max
   end
 
   def size_max_length
-    Parallel.map(@file_info_list, in_threads: @file_info_list.size) { |file_info| file_info.size.to_s.size }.max
+    @file_info_list.map do |file_info|
+      Thread.new do
+        file_info.size.to_s.size
+      end.value
+    end.max
   end
 
   def total_block_count
-    Parallel.map(@file_info_list, in_threads: @file_info_list.size, &:block_count).sum
+    @file_info_list.map do |file_info|
+      Thread.new do
+        file_info.block_count
+      end.value
+    end.sum
   end
 
   def build_file_data_list
-    Parallel.map(@file_info_list, in_threads: @file_info_list.size) do |file_info|
-      {
-        type_and_permission: type_and_permission(file_info),
-        hard_link_count: file_info.hard_link_count,
-        owner_name: file_info.owner_name,
-        group_name: file_info.group_name,
-        size: file_info.size,
-        formatted_time: format_time(file_info),
-        name_and_symbolic_link: file_info.name_and_symbolic_link,
-        hard_link_count_max_length: hard_link_count_max_length,
-        owner_name_max_length: owner_name_max_length,
-        group_name_max_length: group_name_max_length,
-        size_max_length: size_max_length
-      }
+    @file_info_list.map do |file_info|
+      Thread.new do
+        {
+          type_and_permission: type_and_permission(file_info),
+          hard_link_count: file_info.hard_link_count,
+          owner_name: file_info.owner_name,
+          group_name: file_info.group_name,
+          size: file_info.size,
+          formatted_time: format_time(file_info),
+          name_and_symbolic_link: file_info.name_and_symbolic_link,
+          hard_link_count_max_length: hard_link_count_max_length,
+          owner_name_max_length: owner_name_max_length,
+          group_name_max_length: group_name_max_length,
+          size_max_length: size_max_length
+        }
+      end.value
     end
   end
 end
