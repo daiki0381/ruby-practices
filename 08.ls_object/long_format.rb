@@ -54,63 +54,40 @@ class LongFormat
     file_info.final_update_time.strftime('%-m %d %H:%M')
   end
 
-  def hard_link_count_max_length
-    @file_info_list.map do |file_info|
-      Thread.new do
-        file_info.hard_link_count.to_s.size
-      end.value
-    end.max
-  end
-
-  def owner_name_max_length
-    @file_info_list.map do |file_info|
-      Thread.new do
-        file_info.owner_name.size
-      end.value
-    end.max
-  end
-
-  def group_name_max_length
-    @file_info_list.map do |file_info|
-      Thread.new do
-        file_info.group_name.size
-      end.value
-    end.max
-  end
-
-  def size_max_length
-    @file_info_list.map do |file_info|
-      Thread.new do
+  def nested_max_length_list
+    @nested_max_length_list ||= @file_info_list.map do |file_info|
+      [
+        file_info.hard_link_count.to_s.size,
+        file_info.owner_name.size,
+        file_info.group_name.size,
         file_info.size.to_s.size
-      end.value
-    end.max
+      ]
+    end.transpose
+  end
+
+  def max_length_list
+    @max_length_list ||= nested_max_length_list.map(&:max)
   end
 
   def total_block_count
-    @file_info_list.map do |file_info|
-      Thread.new do
-        file_info.block_count
-      end.value
-    end.sum
+    @file_info_list.map(&:block_count).sum
   end
 
   def build_file_data_list
     @file_info_list.map do |file_info|
-      Thread.new do
-        {
-          type_and_permission: type_and_permission(file_info),
-          hard_link_count: file_info.hard_link_count,
-          owner_name: file_info.owner_name,
-          group_name: file_info.group_name,
-          size: file_info.size,
-          formatted_time: format_time(file_info),
-          name_and_symbolic_link: file_info.name_and_symbolic_link,
-          hard_link_count_max_length: hard_link_count_max_length,
-          owner_name_max_length: owner_name_max_length,
-          group_name_max_length: group_name_max_length,
-          size_max_length: size_max_length
-        }
-      end.value
+      {
+        type_and_permission: type_and_permission(file_info),
+        hard_link_count: file_info.hard_link_count,
+        owner_name: file_info.owner_name,
+        group_name: file_info.group_name,
+        size: file_info.size,
+        formatted_time: format_time(file_info),
+        name_and_symbolic_link: file_info.name_and_symbolic_link,
+        hard_link_count_max_length: max_length_list[0],
+        owner_name_max_length: max_length_list[1],
+        group_name_max_length: max_length_list[2],
+        size_max_length: max_length_list[3]
+      }
     end
   end
 end
