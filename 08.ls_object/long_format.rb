@@ -30,12 +30,16 @@ class LongFormat
 
   def output
     puts "total #{total_block_count}"
+    hard_link_count_max_length = max_length_list[:hard_link_count_max_length]
+    owner_name_max_length = max_length_list[:owner_name_max_length]
+    group_name_max_length = max_length_list[:group_name_max_length]
+    size_max_length = max_length_list[:size_max_length]
     build_file_data_list.each do |file_data_list|
       print "#{file_data_list[:type_and_permission]}  "
-      print "#{file_data_list[:hard_link_count].to_s.rjust(file_data_list[:hard_link_count_max_length])} "
-      print "#{file_data_list[:owner_name].to_s.ljust(file_data_list[:owner_name_max_length])}  "
-      print "#{file_data_list[:group_name].to_s.ljust(file_data_list[:group_name_max_length])}  "
-      print "#{file_data_list[:size].to_s.rjust(file_data_list[:size_max_length])}  "
+      print "#{file_data_list[:hard_link_count].to_s.rjust(hard_link_count_max_length)} "
+      print "#{file_data_list[:owner_name].to_s.ljust(owner_name_max_length)}  "
+      print "#{file_data_list[:group_name].to_s.ljust(group_name_max_length)}  "
+      print "#{file_data_list[:size].to_s.rjust(size_max_length)}  "
       print "#{file_data_list[:formatted_time].to_s.rjust(FORMATTED_TIME_LENGTH)} "
       print file_data_list[:name_and_symbolic_link].to_s
       print "\n"
@@ -54,8 +58,8 @@ class LongFormat
     file_info.final_update_time.strftime('%-m %d %H:%M')
   end
 
-  def nested_max_length_list
-    @nested_max_length_list ||= @file_info_list.map do |file_info|
+  def nested_length_list
+    @file_info_list.map do |file_info|
       [
         file_info.hard_link_count.to_s.size,
         file_info.owner_name.size,
@@ -66,7 +70,9 @@ class LongFormat
   end
 
   def max_length_list
-    @max_length_list ||= nested_max_length_list.map(&:max)
+    name_list = %i[hard_link_count_max_length owner_name_max_length group_name_max_length size_max_length]
+    max_length_list = nested_length_list.map(&:max)
+    name_list.zip(max_length_list).to_h
   end
 
   def total_block_count
@@ -82,11 +88,7 @@ class LongFormat
         group_name: file_info.group_name,
         size: file_info.size,
         formatted_time: format_time(file_info),
-        name_and_symbolic_link: file_info.name_and_symbolic_link,
-        hard_link_count_max_length: max_length_list[0],
-        owner_name_max_length: max_length_list[1],
-        group_name_max_length: max_length_list[2],
-        size_max_length: max_length_list[3]
+        name_and_symbolic_link: file_info.name_and_symbolic_link
       }
     end
   end
