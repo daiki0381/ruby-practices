@@ -3,6 +3,8 @@
 require 'etc'
 
 class FileInfo
+  attr_reader :file_name
+
   def initialize(file_name)
     @file_name = file_name
     @file_stat = File.stat(file_name)
