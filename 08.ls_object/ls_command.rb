@@ -11,9 +11,9 @@ class LsCommand
   end
 
   def output
-    sorted_files = @option['a'] ? Dir.glob('*', File::FNM_DOTMATCH).sort : Dir.glob('*').sort
-    reversed_files = @option['r'] ? sorted_files.reverse : sorted_files
-    file_info_list = reversed_files.map { |file_name| FileInfo.new(file_name) }
+    files = @option['a'] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
+    sorted_files = @option['r'] ? files.sort.reverse : files.sort
+    file_info_list = sorted_files.map { |file_name| FileInfo.new(file_name) }
     @option['l'] ? LongFormat.new(file_info_list).output : ShortFormat.new(file_info_list).output
   end
 end
