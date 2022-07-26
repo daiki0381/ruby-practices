@@ -31,14 +31,14 @@ class LongFormat
   def output
     puts "total #{total_block_count}"
     max_lengths = build_max_lengths
-    build_file_data_list.each do |file_data_list|
-      print "#{file_data_list[:type_and_permission]}  "
-      print "#{file_data_list[:hard_link_count].to_s.rjust(max_lengths[:hard_link_count_max_length])} "
-      print "#{file_data_list[:owner_name].to_s.ljust(max_lengths[:owner_name_max_length])}  "
-      print "#{file_data_list[:group_name].to_s.ljust(max_lengths[:group_name_max_length])}  "
-      print "#{file_data_list[:size].to_s.rjust(max_lengths[:size_max_length])}  "
-      print "#{file_data_list[:formatted_time].to_s.rjust(FORMATTED_TIME_LENGTH)} "
-      print file_data_list[:name_and_symbolic_link].to_s
+    @file_info_list.each do |file_info|
+      print "#{type_and_permission(file_info)}  "
+      print "#{file_info.hard_link_count.to_s.rjust(max_lengths[:hard_link_count_max_length])} "
+      print "#{file_info.owner_name.ljust(max_lengths[:owner_name_max_length])}  "
+      print "#{file_info.group_name.ljust(max_lengths[:group_name_max_length])}  "
+      print "#{file_info.size.to_s.rjust(max_lengths[:size_max_length])}  "
+      print "#{format_time(file_info).rjust(FORMATTED_TIME_LENGTH)} "
+      print file_info.name_and_symbolic_link
       print "\n"
     end
   end
@@ -68,19 +68,5 @@ class LongFormat
 
   def total_block_count
     @file_info_list.map(&:block_count).sum
-  end
-
-  def build_file_data_list
-    @file_info_list.map do |file_info|
-      {
-        type_and_permission: type_and_permission(file_info),
-        hard_link_count: file_info.hard_link_count,
-        owner_name: file_info.owner_name,
-        group_name: file_info.group_name,
-        size: file_info.size,
-        formatted_time: format_time(file_info),
-        name_and_symbolic_link: file_info.name_and_symbolic_link
-      }
-    end
   end
 end
