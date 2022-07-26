@@ -8,7 +8,6 @@ class ShortFormat
   end
 
   def output
-    build_nested_file_info_list
     transposed_file_info_list.each do |file_info_list|
       file_info_list.each do |file_info|
         print file_info.file_name.ljust(file_name_max_length + 7)
