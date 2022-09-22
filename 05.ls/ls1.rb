@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 # !/usr/bin/env ruby
+require 'optparse'
+
 NUMBER_OF_COLUMNS = 3
 
-dirs = Dir.glob('*').sort
+option = ARGV.getopts('a')
+dirs = option['a'] ? Dir.glob('*', File::FNM_DOTMATCH).sort : Dir.glob('*').sort
 
 def add_dirs_to_arrs(dirs)
   arrs_containing_dirs = Array.new(NUMBER_OF_COLUMNS) { [] }
